@@ -873,18 +873,24 @@ impl GossipCluster {
         {
             let mut nodes = self.state.cluster_nodes.write().await;
             let epoch = nodes.get(&nid).map(|n| n.epoch).unwrap_or(0);
-            nodes.insert(nid, ClusterNode {
-                node_id: nid,
-                addr,
-                status: NodeStatus::Online,
-                epoch,
-                last_seen: now_millis(),
-            });
+            nodes.insert(
+                nid,
+                ClusterNode {
+                    node_id: nid,
+                    addr,
+                    status: NodeStatus::Online,
+                    epoch,
+                    last_seen: now_millis(),
+                },
+            );
         }
         if let Ok(p) = crate::actor::IntoActorPath::into_actor_path(path.to_string()) {
             let mut named = self.state.named_actors.write().await;
-            named.entry(path.to_string())
-                .and_modify(|info| { info.add_instance(nid); })
+            named
+                .entry(path.to_string())
+                .and_modify(|info| {
+                    info.add_instance(nid);
+                })
                 .or_insert_with(|| NamedActorInfo::with_instance(p, nid));
         }
     }

@@ -50,7 +50,10 @@ async fn test_seed_static_route_registers_named_instance() {
 
     // After seeding the named actor resolves to an instance on the synthetic node.
     let info = system.lookup_named(&path).await;
-    assert!(info.is_some(), "seeded route must register a named instance");
+    assert!(
+        info.is_some(),
+        "seeded route must register a named instance"
+    );
     let info = info.unwrap();
     assert_eq!(info.path, path);
     assert!(!info.instance_nodes.is_empty());
@@ -70,7 +73,11 @@ async fn test_seed_static_route_enables_resolve() {
     // resolve() must succeed without any gossip round-trip: this is the whole
     // point of seeding (pre-fix this fails with "No healthy instances").
     let r = system.resolve_named("shops/remote_worker", None).await;
-    assert!(r.is_ok(), "resolve after seeding must succeed, got: {:?}", r.err());
+    assert!(
+        r.is_ok(),
+        "resolve after seeding must succeed, got: {:?}",
+        r.err()
+    );
 
     system.shutdown().await.unwrap();
 }
@@ -89,7 +96,10 @@ async fn test_seed_static_route_is_idempotent() {
         .seed_static_route("shops/remote_worker", "127.0.0.1:19003")
         .await
         .unwrap();
-    assert!(system.resolve_named("shops/remote_worker", None).await.is_ok());
+    assert!(system
+        .resolve_named("shops/remote_worker", None)
+        .await
+        .is_ok());
 
     system.shutdown().await.unwrap();
 }
@@ -106,7 +116,10 @@ async fn test_seed_static_route_multiple_routes_same_addr() {
             .unwrap();
     }
     for i in 1..=5 {
-        assert!(system.resolve_named(format!("shops/worker_{i}"), None).await.is_ok());
+        assert!(system
+            .resolve_named(format!("shops/worker_{i}"), None)
+            .await
+            .is_ok());
     }
 
     system.shutdown().await.unwrap();
